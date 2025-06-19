@@ -1,12 +1,54 @@
-# React + Vite
+# CrossChainDApp-Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend interface for the CrossChain DApp, a decentralized application that allows users to interact with a custom ERC-721 NFT smart contract deployed on a local Ethereum-compatible network (e.g., Hardhat).
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔗 Wallet connection via MetaMask and RainbowKit
+- 🖼️ Mint NFTs using the `safeMint` function
+- 📊 Check total supply of minted NFTs
+- 📡 Interacts with local smart contracts deployed via Hardhat
+- 🌐 Built with React, Wagmi, RainbowKit, and ethers.js
 
-## Expanding the ESLint configuration
+## 🛠️ Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/yourname/CrossChainDApp-Frontend.git
+cd CrossChainDApp-Frontend
+```
+### 2. Install dependencies
+``` bash
+npm install
+```
+### 3. Start your local Hardhat node (in a separate terminal)
+``` bash
+npx hardhat node
+```
+### 4. Deploy contracts
+```js
+const CONTRACT_ADDRESS = '0x...'; // your MyToken deployed address
+```
+### 5.Start the frontend
+```bash
+npm run dev
+```
+## 📁 File Structure
+- src/components/MyTokenComponent.jsx – Main NFT interaction logic (mint, total supply)
+
+- src/wallet.jsx – Wallet provider setup using Wagmi + RainbowKit
+
+- src/abi/MyToken.json – ABI of the deployed MyToken contract
+
+## ✅ Prerequisites
+- Node.js ≥ 16.x
+
+- MetaMask installed
+
+- Hardhat (as backend dev environment)
+
+## 📄 License
+MIT License
+
+
