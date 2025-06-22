@@ -1,79 +1,59 @@
 import { useState } from 'react';
+import { Layout, Tabs, Typography, theme } from 'antd';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 import MyTokenComponent from './components/MyTokenComponent';
 import NFTPoolLockAndReleaseComponent from './components/NFTPoolLockAndReleaseComponent';
 import WrappedMyTokenComponent from './components/WrappedMyTokenComponent';
 import NFTPoolBurnAndMintComponent from './components/NFTPoolBurnAndMintComponent';
 
+const { Header, Content, Footer } = Layout;
+const { Title, Paragraph } = Typography;
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState('mytoken'); // 默认展示 MyToken
+  const [activeTab, setActiveTab] = useState('mytoken');
+
+  const items = [
+    { key: 'mytoken', label: '🎨 MyToken 操作', children: <MyTokenComponent /> },
+    { key: 'lockpool', label: '🔒 跨链锁定池操作', children: <NFTPoolLockAndReleaseComponent /> },
+    { key: 'wrapped', label: '📦 包装 NFT 查询', children: <WrappedMyTokenComponent /> },
+    { key: 'burnmint', label: '🔥 跨链接收&销毁', children: <NFTPoolBurnAndMintComponent /> },
+  ];
+
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800 flex flex-col items-center">
-      <div className="w-full max-w-5xl px-6 py-10">
-        {/* 标题 */}
-        <h1 className="text-5xl font-extrabold text-blue-600 tracking-tight text-center mb-6">
+    <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+      {/* 顶部 Header */}
+      <Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#001529' }}>
+        <Title level={3} style={{ color: 'white', margin: 0 }}>
           🔗 CrossChain DApp
-        </h1>
+        </Title>
+        <ConnectButton />
+      </Header>
 
-        {/* 钱包连接按钮（右上角） */}
-        <div className="flex justify-end mb-6">
-          <ConnectButton />
-        </div>
+      {/* 主体内容区域 */}
+      <Content style={{ maxWidth: 1000, margin: '0 auto', padding: '32px 16px', background: colorBgContainer }}>
+        <Paragraph style={{ textAlign: 'center', marginBottom: 24, fontSize: 16 }}>
+          跨链 NFT 管理与演示平台，支持 Chainlink CCIP 模拟
+        </Paragraph>
 
-        {/* 副标题 */}
-        <p className="text-center text-gray-600 text-lg mb-10">
-          跨链 NFT 管理与演示
-        </p>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={items}
+          tabBarGutter={16}
+          size="large"
+          centered
+        />
+      </Content>
 
-        {/* Tab 切换按钮 */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <button
-            onClick={() => setActiveTab('mytoken')}
-            className={`px-4 py-2 rounded ${activeTab === 'mytoken'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-          >
-            MyToken 操作
-          </button>
-          <button
-            onClick={() => setActiveTab('lockpool')}
-            className={`px-4 py-2 rounded ${activeTab === 'lockpool'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-          >
-            跨链锁定池操作
-          </button>
-          <button
-            onClick={() => setActiveTab('wrapped')}
-            className={`px-4 py-2 rounded ${activeTab === 'wrapped'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-          >
-            包装 NFT 查询
-          </button>
-          <button
-            onClick={() => setActiveTab('burnmint')}
-            className={`px-4 py-2 rounded ${activeTab === 'burnmint'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-          >
-            跨链接收&销毁
-          </button>
-        </div>
-
-        {/* 主内容卡片 */}
-        <main className="bg-white rounded-3xl shadow-xl p-8 border border-gray-200 space-y-6">
-          {activeTab === 'mytoken' && <MyTokenComponent />}
-          {activeTab === 'lockpool' && <NFTPoolLockAndReleaseComponent />}
-          {activeTab === 'wrapped' && <WrappedMyTokenComponent />}
-          {activeTab === 'burnmint' && <NFTPoolBurnAndMintComponent />}
-        </main>
-      </div>
-    </div>
+      {/* 底部 Footer */}
+      <Footer style={{ textAlign: 'center', background: '#fff' }}>
+        Chainlink CCIP 跨链演示 DApp ©2025 Created by CryptoM
+      </Footer>
+    </Layout>
   );
 }

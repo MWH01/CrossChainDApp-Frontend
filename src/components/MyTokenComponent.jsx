@@ -1,8 +1,10 @@
 import { useWalletClient, useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
+import { Button, Alert, Card, Typography, Space, Tag } from 'antd';
 import MyTokenABI from '../abi/MyToken.json';
 
+const { Title, Text } = Typography;
 const CONTRACT_ADDRESS = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512';
 const TARGET_CHAIN_ID = 31337; // Hardhat
 
@@ -15,7 +17,6 @@ export default function MyTokenComponent() {
     const [status, setStatus] = useState('');
     const [currentChainId, setCurrentChainId] = useState(null);
 
-    // 监听链变化
     useEffect(() => {
         if (window.ethereum) {
             const handleChainChanged = (chainIdHex) => {
@@ -32,7 +33,6 @@ export default function MyTokenComponent() {
         }
     }, []);
 
-    // 加载合约
     useEffect(() => {
         async function loadContract() {
             if (!walletClient || !isConnected || !address) {
@@ -54,16 +54,14 @@ export default function MyTokenComponent() {
         loadContract();
     }, [walletClient, isConnected, address]);
 
-    // 切换网络
     const switchToTargetChain = async () => {
         try {
             await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0x7a69' }], // 0x7a69 是 31337 的16进制
+                params: [{ chainId: '0x7a69' }],
             });
             setError('');
         } catch (switchError) {
-            // 如果用户钱包没有该链，尝试添加
             if (switchError.code === 4902) {
                 try {
                     await window.ethereum.request({
@@ -72,11 +70,7 @@ export default function MyTokenComponent() {
                             {
                                 chainId: '0x7a69',
                                 chainName: 'Hardhat Localhost',
-                                nativeCurrency: {
-                                    name: 'ETH',
-                                    symbol: 'ETH',
-                                    decimals: 18,
-                                },
+                                nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
                                 rpcUrls: ['http://127.0.0.1:8545'],
                                 blockExplorerUrls: [],
                             },
@@ -100,7 +94,7 @@ export default function MyTokenComponent() {
             setStatus('铸造中...');
             const tx = await contract.safeMint(address);
             const receipt = await tx.wait();
-            setStatus(`铸造成功！交易哈希：${receipt.hash}`);
+            setStatus(`✅ 铸造成功！交易哈希：${receipt.hash}`);
         } catch (err) {
             console.error(err);
             setStatus('');
@@ -124,40 +118,45 @@ export default function MyTokenComponent() {
     };
 
     return (
-        <div className="p-4">
-            <h2 className="text-lg font-bold mb-2">MyToken NFT 操作</h2>
+        <Card title="🎨 MyToken NFT 操作面板" style={{ maxWidth: 600, margin: '0 auto' }}>
+            <Space direction="vertical" style={{ width: '100%' }}>
+                {!isConnected && <Alert message="请先连接钱包" type="warning" showIcon />}
+                {error && <Alert message={error} type="error" showIcon />}
+                {status && <Alert message={status} type="success" showIcon />}
 
-            {error && <div className="text-red-500 mb-2">错误：{error}</div>}
-            {status && <div className="text-green-600 mb-2">状态：{status}</div>}
+                <Text strong>钱包地址：</Text>
+                <Text code>{address || '未连接'}</Text>
 
-            {!isConnected && <div className="text-yellow-500 mb-2">请先连接钱包</div>}
+                <Text>
+                    当前网络：
+                    <Tag color={currentChainId === TARGET_CHAIN_ID ? 'green' : 'orange'}>
+                        {currentChainId ?? '未知'}
+                    </Tag>
+                </Text>
 
-            {currentChainId !== TARGET_CHAIN_ID && (
-                <div className="mb-4 text-yellow-600">
-                    <p className="mb-2">当前链ID：{currentChainId ?? '未知'}，请切换到本地链 Hardhat (31337)</p>
-                    <button
-                        onClick={switchToTargetChain}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+                {currentChainId !== TARGET_CHAIN_ID && (
+                    <Button type="primary" danger onClick={switchToTargetChain}>
+                        🔁 切换到 Hardhat 本地链
+                    </Button>
+                )}
+
+                <Space>
+                    <Button
+                        type="default"
+                        onClick={handleCheckSupply}
+                        disabled={!contract || currentChainId !== TARGET_CHAIN_ID}
                     >
-                        切换到 Hardhat 本地链
-                    </button>
-                </div>
-            )}
-
-            <button
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2"
-                onClick={handleCheckSupply}
-                disabled={!contract || currentChainId !== TARGET_CHAIN_ID}
-            >
-                查看总供应量
-            </button>
-            <button
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-                onClick={handleMint}
-                disabled={!contract || currentChainId !== TARGET_CHAIN_ID}
-            >
-                铸造一个 NFT
-            </button>
-        </div>
+                        📦 查看总供应量
+                    </Button>
+                    <Button
+                        type="primary"
+                        onClick={handleMint}
+                        disabled={!contract || currentChainId !== TARGET_CHAIN_ID}
+                    >
+                        🪙 铸造一个 NFT
+                    </Button>
+                </Space>
+            </Space>
+        </Card>
     );
 }
