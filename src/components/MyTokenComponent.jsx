@@ -42,7 +42,7 @@ export default function MyTokenComponent() {
 
             try {
                 const provider = new ethers.BrowserProvider(window.ethereum);
-                const signer = await provider.getSigner(address);
+                const signer = await provider.getSigner();
                 const myContract = new ethers.Contract(CONTRACT_ADDRESS, MyTokenABI.abi, signer);
                 setContract(myContract);
                 setError('');
